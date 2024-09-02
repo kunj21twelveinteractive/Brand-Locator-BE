@@ -279,23 +279,23 @@ export const contactUs = async (req: Request, res: Response) => {
 
 // export const searchStore = async (req: Request, res: Response) => {
 //   try {
-//     const { country, city, brand } = req.body;
+//     const { country, city, brand,longitude, latitude} = req.body;
 
 //     console.log(req.body,"  req.body");
 
 //     // Find stores in the specified country, city, and with the specified brand
 //     const stores = await StoreModel.aggregate([
-//       // {
-//       //   $geoNear: {
-//       //     near: {
-//       //       type: 'Point',
-//       //       coordinates: [longitude, latitude],
-//       //     },
-//       //     distanceField: 'distance',
-//       //    // maxDistance: 10000, // 10 km radius
-//       //     spherical: true,
-//       //   },
-//       // },
+//       {
+//         $geoNear: {
+//           near: {
+//             type: 'Point',
+//             coordinates: [longitude, latitude],
+//           },
+//           distanceField: 'distance',
+//          // maxDistance: 10000, // 10 km radius
+//           spherical: true,
+//         },
+//       },
 //       {
 //         $match: {
 //           country,
@@ -308,7 +308,7 @@ export const contactUs = async (req: Request, res: Response) => {
 //           _id: 1,
 //           storeName: 1,
 //           storeAddress: 1,
-//           //distance: 1,
+//           distance: 1,
 //           brands: 1,
 //         },
 //       },
@@ -324,7 +324,7 @@ export const contactUs = async (req: Request, res: Response) => {
 //         id: store._id,
 //         storeName: store.storeName,
 //         storeAddress: store.storeAddress,
-//        // distance: (store.distance / 1000).toFixed(2), // Convert distance to kilometers and format it to 2 decimal places
+//        distance: (store.distance / 1000).toFixed(2), // Convert distance to kilometers and format it to 2 decimal places
 //         availableBrands: store.brands, // Directly use the brands array from the database
 //       };
 //     });
@@ -718,21 +718,25 @@ export const searchBrand = async (
   }
 };
 
-export const searchStore = async (
-  req: Request,
-  res: Response
-): Promise<Response> => {
+export const searchStore = async (req: Request, res: Response): Promise<Response> => {
   try {
-    const { country, city, brand } = req.body as {
-      country: string;
-      city: string;
-      brand: string;
-    };
+    const { country, city, brand, longitude, latitude } = req.body;
 
-    console.log(req.body, " req.body");
+    console.log(req.body, "  req.body");
 
     // Find stores in the specified country, city, and with the specified brand
     const stores = await StoreModel.aggregate([
+      {
+        $geoNear: {
+          near: {
+            type: "Point",
+            coordinates: [longitude, latitude],
+          },
+          distanceField: "distance",
+          // maxDistance: 10000, // 10 km radius
+          spherical: true,
+        },
+      },
       {
         $match: {
           country,
@@ -745,23 +749,23 @@ export const searchStore = async (
           _id: 1,
           storeName: 1,
           storeAddress: 1,
+          distance: 1,
           brands: 1,
         },
       },
     ]);
 
     if (!stores.length) {
-      return res
-        .status(404)
-        .json({ message: "No stores found matching the criteria" });
+      return res.status(404).json({ message: "No stores found matching the criteria" });
     }
 
     // Prepare the response
-    const response = stores.map((store) => {
+    const response = stores.map((store: any) => {
       return {
         id: store._id,
         storeName: store.storeName,
         storeAddress: store.storeAddress,
+        distance: (store.distance / 1000).toFixed(2), // Convert distance to kilometers and format it to 2 decimal places
         availableBrands: store.brands, // Directly use the brands array from the database
       };
     });
