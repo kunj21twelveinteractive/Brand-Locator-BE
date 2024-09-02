@@ -21,10 +21,10 @@ app.use("/api", router);
 mongoose
 
   .connect("mongodb://localhost:27017/Loco-Shop", {
-    //.connect("mongodb+srv://jash21twelve_test:jash21twelve_test@cluster0.yg7pskb.mongodb.net/MatchAndMeet", {
+
   })
   .then(() => {
-    const PORT: number = parseInt(process.env.PORT || "6969", 10); // Ensure PORT is a number and provide a default value
+    const PORT: number = parseInt(process.env.PORT || "3030", 10); // Ensure PORT is a number and provide a default value
     app.listen(PORT, () => {
       console.log(`Listening on *:${PORT}`);
     });
