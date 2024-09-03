@@ -4,7 +4,7 @@ import mongoose from "mongoose";
 import router from "./src/router/router";
 
 import path from "path";
-import { generateFakeBrands } from "./seeder";
+// import { generateFakeBrands } from "./seeder";
 
 const app = express();
 app.use(express.json());
