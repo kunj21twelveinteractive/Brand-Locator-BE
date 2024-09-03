@@ -4,6 +4,7 @@ import mongoose from "mongoose";
 import router from "./src/router/router";
 
 import path from "path";
+import { generateFakeBrands } from "./seeder";
 
 const app = express();
 app.use(express.json());
@@ -20,7 +21,7 @@ app.use("/api", router);
 
 mongoose
 
-  .connect("mongodb://localhost:27017/Loco-Shop", {
+  .connect("mongodb+srv://jash21twelve_test:jash21twelve_test@cluster0.yg7pskb.mongodb.net/Loco-Shop", {
 
   })
   .then(() => {
