@@ -489,8 +489,6 @@ export const contactUs = async (req: Request, res: Response) => {
 //   }
 // };
 
-//TYPESCRIPT
-
 
 
 export const currentLocationData = async (
