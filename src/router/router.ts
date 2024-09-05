@@ -5,6 +5,7 @@ import {
   geoLocationSchema,
 } from "../validation/contact-us-validation";
 import {
+  allData,
   brandData,
   contactUs,
   countryCities,
@@ -111,5 +112,9 @@ router.post("/store-data", storeDataWithBrands);
 router.get("/all-brands", getAllBrands);
 
 router.get("/country-city", countryCities);
+
+
+// Will Get All Data, Response is Set as Brand-> Country-> city-> Store->
+router.get("/all-data",allData)
 
 export default router;
