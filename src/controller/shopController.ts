@@ -949,6 +949,81 @@ export const countryCities = async (
   }
 };
 
+// export const allData = async (req: Request, res: Response) => {
+
+
+//   try {
+//     // Fetch all stores from the database with brands populated
+//     const stores = await StoreModel.find().populate('brands', 'brandName brandLogo');
+
+//     // Create a map to hold the formatted data
+//     const brandMap: any = {};
+
+//     // Iterate over each store
+//     stores.forEach((store: any) => {
+//       store.brands.forEach((brand: any) => {
+//         // Check if the brand already exists in the map
+//         if (!brandMap[brand.brandName]) {
+//           brandMap[brand.brandName] = {
+//             brand_name: brand.brandName,
+//             country: {}
+//           };
+//         }
+
+//         // Check if the country exists under the brand
+//         if (!brandMap[brand.brandName].country[store.country]) {
+//           brandMap[brand.brandName].country[store.country] = {
+//             country_name: store.country,
+//             country_city: {}
+//           };
+//         }
+
+//         // Check if the city exists under the country
+//         if (!brandMap[brand.brandName].country[store.country].country_city[store.city]) {
+//           brandMap[brand.brandName].country[store.country].country_city[store.city] = {
+//             city_name: store.city,
+//             city_stores: []
+//           };
+//         }
+
+//         // Add the store under the city
+//         brandMap[brand.brandName].country[store.country].country_city[store.city].city_stores.push({
+//           store_name: store.storeName
+//         });
+//       });
+//     });
+
+//     // Convert the map to the desired array format
+//     const data = Object.keys(brandMap).map((brandKey) => {
+//       const countries = Object.keys(brandMap[brandKey].country).map((countryKey) => {
+//         const cities = Object.keys(brandMap[brandKey].country[countryKey].country_city).map((cityKey) => {
+//           return {
+//             city_name: cityKey,
+//             city_stores: brandMap[brandKey].country[countryKey].country_city[cityKey].city_stores
+//           };
+//         });
+
+//         return {
+//           country_name: countryKey,
+//           country_city: cities
+//         };
+//       });
+
+//       return {
+//         brand_name: brandKey,
+//         country: countries
+//       };
+//     });
+
+//     // Send the formatted data as a response
+//     res.status(200).json(data);
+//   } catch (error) {
+//     console.error('Error fetching data:', error);
+//     res.status(500).json({ error: 'An error occurred while fetching data' });
+//   }
+// };
+
+
 export const allData = async (req: Request, res: Response) => {
   try {
     // Fetch all stores from the database with brands populated
@@ -991,30 +1066,58 @@ export const allData = async (req: Request, res: Response) => {
       });
     });
 
-    // Convert the map to the desired array format
-    const data = Object.keys(brandMap).map((brandKey) => {
-      const countries = Object.keys(brandMap[brandKey].country).map((countryKey) => {
-        const cities = Object.keys(brandMap[brandKey].country[countryKey].country_city).map((cityKey) => {
+    // Convert the map to the desired array format and sort brands alphabetically
+    const sortedBrands = Object.keys(brandMap)
+      .sort((a, b) => a.localeCompare(b)) // Sorting brand names alphabetically
+      .map((brandKey) => {
+        const countries = Object.keys(brandMap[brandKey].country).map((countryKey) => {
+          const cities = Object.keys(brandMap[brandKey].country[countryKey].country_city).map((cityKey) => {
+            return {
+              city_name: cityKey,
+              city_stores: brandMap[brandKey].country[countryKey].country_city[cityKey].city_stores
+            };
+          });
+
           return {
-            city_name: cityKey,
-            city_stores: brandMap[brandKey].country[countryKey].country_city[cityKey].city_stores
+            country_name: countryKey,
+            country_city: cities
           };
         });
 
         return {
-          country_name: countryKey,
-          country_city: cities
+          brand_name: brandKey,
+          country: countries
         };
       });
 
-      return {
-        brand_name: brandKey,
-        country: countries
-      };
+    // Group by alphabet
+    const data: any[] = [];
+    let currentAlphabet = '';
+
+    sortedBrands.forEach((brandData) => {
+      const brandFirstLetter = brandData.brand_name.charAt(0).toUpperCase();
+
+      // Check if the alphabet section needs to be created
+      if (brandFirstLetter !== currentAlphabet) {
+        currentAlphabet = brandFirstLetter;
+
+        // Add the new alphabet group
+        data.push({
+          alphabet: currentAlphabet,
+          brands: []
+        });
+      }
+
+      // Add brand under the current alphabet group
+      data[data.length - 1].brands.push(brandData);
     });
 
-    // Send the formatted data as a response
-    res.status(200).json(data);
+
+    res.status(200).json({
+      status: 'success',
+      message: 'Data fetched successfully',
+      data: data
+    });
   } catch (error) {
     console.error('Error fetching data:', error);
     res.status(500).json({ error: 'An error occurred while fetching data' });
