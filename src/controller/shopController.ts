@@ -949,9 +949,8 @@ export const countryCities = async (
   }
 };
 
+
 // export const allData = async (req: Request, res: Response) => {
-
-
 //   try {
 //     // Fetch all stores from the database with brands populated
 //     const stores = await StoreModel.find().populate('brands', 'brandName brandLogo');
@@ -993,30 +992,58 @@ export const countryCities = async (
 //       });
 //     });
 
-//     // Convert the map to the desired array format
-//     const data = Object.keys(brandMap).map((brandKey) => {
-//       const countries = Object.keys(brandMap[brandKey].country).map((countryKey) => {
-//         const cities = Object.keys(brandMap[brandKey].country[countryKey].country_city).map((cityKey) => {
+//     // Convert the map to the desired array format and sort brands alphabetically
+//     const sortedBrands = Object.keys(brandMap)
+//       .sort((a, b) => a.localeCompare(b)) // Sorting brand names alphabetically
+//       .map((brandKey) => {
+//         const countries = Object.keys(brandMap[brandKey].country).map((countryKey) => {
+//           const cities = Object.keys(brandMap[brandKey].country[countryKey].country_city).map((cityKey) => {
+//             return {
+//               city_name: cityKey,
+//               city_stores: brandMap[brandKey].country[countryKey].country_city[cityKey].city_stores
+//             };
+//           });
+
 //           return {
-//             city_name: cityKey,
-//             city_stores: brandMap[brandKey].country[countryKey].country_city[cityKey].city_stores
+//             country_name: countryKey,
+//             country_city: cities
 //           };
 //         });
 
 //         return {
-//           country_name: countryKey,
-//           country_city: cities
+//           brand_name: brandKey,
+//           country: countries
 //         };
 //       });
 
-//       return {
-//         brand_name: brandKey,
-//         country: countries
-//       };
+//     // Group by alphabet
+//     const data: any[] = [];
+//     let currentAlphabet = '';
+
+//     sortedBrands.forEach((brandData) => {
+//       const brandFirstLetter = brandData.brand_name.charAt(0).toUpperCase();
+
+//       // Check if the alphabet section needs to be created
+//       if (brandFirstLetter !== currentAlphabet) {
+//         currentAlphabet = brandFirstLetter;
+
+//         // Add the new alphabet group
+//         data.push({
+//           alphabet: currentAlphabet,
+//           brands: []
+//         });
+//       }
+
+//       // Add brand under the current alphabet group
+//       data[data.length - 1].brands.push(brandData);
 //     });
 
-//     // Send the formatted data as a response
-//     res.status(200).json(data);
+
+//     res.status(200).json({
+//       status: 'success',
+//       message: 'Data fetched successfully',
+//       data: data
+//     });
 //   } catch (error) {
 //     console.error('Error fetching data:', error);
 //     res.status(500).json({ error: 'An error occurred while fetching data' });
@@ -1039,6 +1066,7 @@ export const allData = async (req: Request, res: Response) => {
         if (!brandMap[brand.brandName]) {
           brandMap[brand.brandName] = {
             brand_name: brand.brandName,
+            brand_logo: brand.brandLogo,
             country: {}
           };
         }
@@ -1061,7 +1089,12 @@ export const allData = async (req: Request, res: Response) => {
 
         // Add the store under the city
         brandMap[brand.brandName].country[store.country].country_city[store.city].city_stores.push({
-          store_name: store.storeName
+          store_name: store.storeName,
+          store_address: store.storeAddress,
+          latitude: store.location.coordinates[1], // Latitude
+          longitude: store.location.coordinates[0], // Longitude
+          googleMapUrl: store.googleMapUrl,
+          store_id: store._id // Object ID of the store
         });
       });
     });
@@ -1085,7 +1118,8 @@ export const allData = async (req: Request, res: Response) => {
         });
 
         return {
-          brand_name: brandKey,
+          brand_name: brandMap[brandKey].brand_name,
+          brand_logo: brandMap[brandKey].brand_logo,
           country: countries
         };
       });
@@ -1111,7 +1145,6 @@ export const allData = async (req: Request, res: Response) => {
       // Add brand under the current alphabet group
       data[data.length - 1].brands.push(brandData);
     });
-
 
     res.status(200).json({
       status: 'success',
