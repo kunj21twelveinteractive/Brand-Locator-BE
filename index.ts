@@ -4,11 +4,13 @@ import mongoose from "mongoose";
 import router from "./src/router/router";
 
 import path from "path";
+import { log } from "console";
 
 const app = express();
 app.use(express.json());
 
 app.use(cors());
+console.log("hello ");
 
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 app.use("/brand-logo", express.static(path.join(__dirname, "brand-logo")));
