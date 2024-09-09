@@ -14,4 +14,5 @@ export interface Brand {
     storeName: string;
     storeAddress: string;
     brands: Brand[];
+    googleMapUrl:string;
   }

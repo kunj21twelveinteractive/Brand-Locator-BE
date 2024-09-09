@@ -16,6 +16,7 @@ const brandSchema: Schema = new Schema({
     storeName: { type: String },
     storeAddress: { type: String },
     brands: [brandSchema],
+    googleMapUrl:{type:String},
   });
   
   StoreSchema.index({ location: '2dsphere' });
