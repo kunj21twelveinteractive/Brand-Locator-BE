@@ -13,7 +13,7 @@ app.use(cors());
 console.log("hello ");
 
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
-app.use("/brand-logo", express.static(path.join(__dirname, "brand-logo")));
+app.use("/Brand-Logo", express.static(path.join(__dirname, "Brand-Logo")));
 
 app.get("/", (req: Request, res: Response) => {
   res.send("Welcome to Loco-Shop");
