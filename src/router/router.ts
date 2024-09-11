@@ -6,15 +6,11 @@ import {
 } from "../validation/contact-us-validation";
 import {
   allData,
-  brandData,
   contactUs,
   countData,
   countryCities,
   currentLocationData,
   getAllBrands,
-  searchBrand,
-  searchStore,
-  storeDataWithBrands,
 } from "../controller/shopController";
 import express, { Request, Response } from "express";
 
@@ -93,31 +89,19 @@ router.post("/store", upload, async (req: Request, res: Response) => {
   }
 });
 
-// Get Data in Home- page
-router.post("/geo-location", validate(geoLocationSchema), currentLocationData);
-
-//Search According to Brand
-router.get("/brand", brandData);
-
 //Contact-Us
 router.post("/contact-us", validate(contactUsValidation), contactUs);
 
-// Click On Nearby Brands On Home Page
-router.post("/search-brand", searchBrand);
-
-// Search Store According to Country-City-Brand
-router.post("/search-store", searchStore);
-
-router.post("/store-data", storeDataWithBrands);
+// Get Data in Home- page
+router.post("/geo-location", validate(geoLocationSchema), currentLocationData);
 
 router.get("/all-brands", getAllBrands);
 
 router.get("/country-city", countryCities);
 
-
 // Will Get All Data, Response is Set as Brand-> Country-> city-> Store->
-router.get("/all-data",allData)
+router.get("/all-data", allData);
 
-router.get("/count-data",countData)
+router.get("/count-data", countData);
 
 export default router;
