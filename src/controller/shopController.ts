@@ -491,108 +491,13 @@ export const contactUs = async (req: Request, res: Response) => {
 
 
 
-// export const currentLocationData = async (
-//   req: Request,
-//   res: Response
-// ): Promise<Response> => {
-//   try {
-//     const { latitude, longitude }: { latitude: number; longitude: number } =
-//       req.body;
-
-//     console.log(req.body, "loggg");
-
-//     if (typeof latitude !== "number" || typeof longitude !== "number") {
-//       return res.status(400).json({ message: "Invalid latitude or longitude" });
-//     }
-
-//     // Find stores within a 10 km radius of the user's location
-//     const nearbyStores = await StoreModel.aggregate([
-//       {
-//         $geoNear: {
-//           near: { type: "Point", coordinates: [longitude, latitude] },
-//           distanceField: "distance",
-//           distanceMultiplier: 0.001, // Convert distance to kilometers
-//           maxDistance: 10000, // 10 km in meters
-//           spherical: true,
-//         },
-//       },
-//       {
-//         $match: {
-//           city: { $exists: true },
-//         },
-//       },
-//     ]);
-
-//     // Group by brand name
-//     const brandsWithStores = await StoreModel.aggregate([
-//       {
-//         $geoNear: {
-//           near: { type: "Point", coordinates: [longitude, latitude] },
-//           distanceField: "distance",
-//           distanceMultiplier: 0.001, // Convert distance to kilometers
-//           maxDistance: 10000, // 10 km in meters
-//           spherical: true,
-//         },
-//       },
-//       {
-//         $match: {
-//           city: { $exists: true },
-//         },
-//       },
-//       {
-//         $unwind: "$brands", // Unwind the brands array to work with individual brands
-//       },
-//       {
-//         $group: {
-//           _id: {
-//             brandName: "$brands.brandName", // Group by brand name
-//             city: "$city",
-//             country: "$country",
-//           },
-//           stores: {
-//             $addToSet: {
-//               // Use $addToSet to avoid duplicates
-//               storeName: "$storeName",
-//               storeAddress: "$storeAddress",
-//               location: "$location",
-//               distance: "$distance",
-//             },
-//           },
-//           brandLogo: { $first: "$brands.brandLogo" }, // Get the brandLogo for each brand
-//         },
-//       },
-//       {
-//         $project: {
-//           _id: 0, // Exclude _id field
-//           brandName: "$_id.brandName", // Rename _id to brandName
-//           city: "$_id.city", // Include city
-//           country: "$_id.country", // Include country
-//           brandLogo: 1, // Include brandLogo
-//           stores: 1, // Include stores array
-//         },
-//       },
-//       {
-//         $sort: { brandName: 1 }, // Sort brands alphabetically by brandName
-//       },
-//     ]);
-
-//     return res.status(200).json({
-//       nearbyStores,
-//       brandsWithStores,
-//       message: "Success",
-//     });
-//   } catch (error) {
-//     console.error("Error finding nearby stores:", error);
-//     return res.status(500).json({ message: "Internal server error" });
-//   }
-// };
-
 export const currentLocationData = async (
   req: Request,
   res: Response
 ): Promise<Response> => {
   try {
-    const { latitude, longitude }: { latitude: number; longitude: number } = req.body;
+    const { latitude, longitude }: { latitude: number; longitude: number } =
+      req.body;
 
     console.log(req.body, "loggg");
 
@@ -618,7 +523,7 @@ export const currentLocationData = async (
       },
     ]);
 
-    // Group by brand name for stores within a 10 km radius
+    // Group by brand name
     const brandsWithStores = await StoreModel.aggregate([
       {
         $geoNear: {
@@ -671,17 +576,9 @@ export const currentLocationData = async (
       },
     ]);
 
-    // Get counts of unique cities, countries, and brands
-    const totalCities = (await StoreModel.distinct("city")).length;
-    const totalCountries = (await StoreModel.distinct("country")).length;
-    const totalBrands = (await StoreModel.distinct("brands.brandName")).length;
-
     return res.status(200).json({
       nearbyStores,
       brandsWithStores,
-      totalCities, // Total number of unique cities
-      totalCountries, // Total number of unique countries
-      totalBrands, // Total number of unique brands
       message: "Success",
     });
   } catch (error) {
@@ -1260,5 +1157,29 @@ export const allData = async (req: Request, res: Response) => {
   } catch (error) {
     console.error('Error fetching data:', error);
     res.status(500).json({ error: 'An error occurred while fetching data' });
+  }
+};
+
+export const countData = async (req: Request, res: Response): Promise<Response> => {
+  try {
+    // Get counts of unique cities, countries, and brands
+    const totalCities = (await StoreModel.distinct("city")).length;
+    const totalCountries = (await StoreModel.distinct("country")).length;
+    const totalBrands = (await StoreModel.distinct("brands.brandName")).length;
+
+    // Log the counts
+    console.log(`Total Cities: ${totalCities}`);
+    console.log(`Total Countries: ${totalCountries}`);
+    console.log(`Total Brands: ${totalBrands}`);
+
+    // Return the counts in the response
+    return res.status(200).json({
+      totalCities,
+      totalCountries,
+      totalBrands,
+    });
+  } catch (error) {
+    console.error("Error fetching counts:", error);
+    return res.status(500).json({ message: "Internal server error" });
   }
 };

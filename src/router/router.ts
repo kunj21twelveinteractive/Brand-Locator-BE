@@ -8,6 +8,7 @@ import {
   allData,
   brandData,
   contactUs,
+  countData,
   countryCities,
   currentLocationData,
   getAllBrands,
@@ -116,5 +117,7 @@ router.get("/country-city", countryCities);
 
 // Will Get All Data, Response is Set as Brand-> Country-> city-> Store->
 router.get("/all-data",allData)
+
+router.get("/count-data",countData)
 
 export default router;
