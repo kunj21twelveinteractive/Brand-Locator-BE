@@ -5,6 +5,7 @@ import router from "./src/router/router";
 
 import path from "path";
 import { log } from "console";
+import { parseCsvFile } from "./cvsToDatabase";
 
 const app = express();
 app.use(express.json());

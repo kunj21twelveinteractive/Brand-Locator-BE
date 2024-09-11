@@ -12,6 +12,7 @@
     "@types/multer": "^1.4.11",
     "@types/node": "^22.2.0",
     "@types/nodemailer": "^6.4.15",
+    "@types/papaparse": "^5.3.14",
     "nodemon": "^3.1.4",
     "ts-node": "^10.9.2",
     "typescript": "^5.5.4"
@@ -37,6 +38,7 @@
     "joi": "^17.13.3",
     "mongoose": "^8.5.2",
     "multer": "^1.4.5-lts.1",
-    "nodemailer": "^6.9.14"
+    "nodemailer": "^6.9.14",
+    "papaparse": "^5.4.1"
   }
 }
