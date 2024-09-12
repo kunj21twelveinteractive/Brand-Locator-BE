@@ -87,7 +87,7 @@ export const currentLocationData = async (
           near: { type: "Point", coordinates: [longitude, latitude] },
           distanceField: "distance",
           distanceMultiplier: 0.001, // Convert distance to kilometers
-          maxDistance: 10000, // 10 km in meters
+          maxDistance: 30000, // 10 km in meters
           spherical: true,
         },
       },
